@@ -2,9 +2,9 @@ import type { Site, Page, Links, Socials } from "@types"
 
 // Global
 export const SITE: Site = {
-  TITLE: "Astro Sphere",
-  DESCRIPTION: "Welcome to Astro Sphere, a portfolio and blog for designers and developers.",
-  AUTHOR: "Mark Horn",
+  TITLE: "Aniket Sen",
+  DESCRIPTION: "Welcome to my portfolio and blog, showcasing my work and thoughts.",
+  AUTHOR: "Aniket Sen",
 }
 
 // Work Page
@@ -56,26 +56,20 @@ export const SOCIALS: Socials = [
   { 
     NAME: "Email",
     ICON: "email", 
-    TEXT: "markhorn.dev@gmail.com",
-    HREF: "mailto:markhorn.dev@gmail.com",
+    TEXT: "sen@hiskp.uni-bonn.de",
+    HREF: "mailto:sen@hiskp.uni-bonn.de",
   },
   { 
     NAME: "Github",
     ICON: "github",
-    TEXT: "markhorn-dev",
-    HREF: "https://github.com/markhorn-dev/astro-sphere"
+    TEXT: "aniketsen",
+    HREF: "https://github.com/aniketsen"
   },
   { 
     NAME: "LinkedIn",
     ICON: "linkedin",
-    TEXT: "markhorn-dev",
-    HREF: "https://www.linkedin.com/in/markhorn-dev/",
-  },
-  { 
-    NAME: "Twitter",
-    ICON: "twitter-x",
-    TEXT: "markhorn_dev",
-    HREF: "https://twitter.com/markhorn_dev",
+    TEXT: "Aniket Sen",
+    HREF: "https://www.linkedin.com/in/aniket-sen-53916b41/",
   },
 ]
 
