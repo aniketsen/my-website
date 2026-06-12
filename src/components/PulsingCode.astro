@@ -1,0 +1,214 @@
+---
+/**
+ * PulsingCode.astro
+ * Ambient wall of source code with a travelling brightness pulse.
+ * Motion is 100% CSS; the inline script runs once to build the lines.
+ *
+ * Theme-aware: dark mode = glowing light code on black, light mode = dark
+ * code on a light canvas. Palette lives in CSS variables; light values are
+ * supplied under `html:not(.dark)`.
+ *
+ * Light syntax highlighting: a small keyword set is wrapped in <span.cw-kw>
+ * and given its own colour (like the comments). Keywords still pulse/glow
+ * with their line because opacity cascades from the line element.
+ */
+---
+
+<div id="codewall" aria-hidden="true"></div>
+
+<script is:inline>
+  (function () {
+    // ---- the code that fills the wall: real lattice-QCD / Kokkos / HMC source ----
+    const SNIPPET = [
+      "// Parallel dispatch for reduction operation with automatic tuning",
+      "template <class ExecPolicy, class FunctorType, class... ReducerArgument>",
+      "  requires(Kokkos::is_execution_policy<ExecPolicy>::value || std::is_integral<ExecPolicy>::value)",
+      "inline void",
+      "parallel_reduce(const ExecPolicy &policy, const FunctorType &functor, ReducerArgument &&...reducer)",
+      "",
+      "// Wilson loop in mu and nu plane",
+      "template <typename... Indices>",
+      "KOKKOS_FORCEINLINE_FUNCTION void operator()(const Indices... Idcs) const {",
+      "  // similar to the plaquette, we first build two half loops",
+      "  // lmu = WL_mu (x) * WL_nu (x + mu)",
+      "  SUN<Nc> lmu = WLmu(Idcs...) * WLnu(shift_index_plus<rank, size_t>(",
+      "                                    Kokkos::Array<size_t, rank>{Idcs...}, mu,",
+      "                                    Lmu, dimensions));",
+      "  // lnu = WL_nu (x) * WL_mu (x + nu)",
+      "  SUN<Nc> lnu = WLnu(Idcs...) * WLmu(shift_index_plus<rank, size_t>(",
+      "                                    Kokkos::Array<size_t, rank>{Idcs...}, nu,",
+      "                                    Lnu, dimensions));",
+      "  // finally, construct the loop Wmunu = lmu * lnu^dagger",
+      "  // only need to take trace",
+      "  complex_t tmunu(0.0, 0.0);",
+      "#pragma unroll",
+      "  for (index_t c1 = 0; c1 < Nc; ++c1) {",
+      "#pragma unroll",
+      "    for (index_t c2 = 0; c2 < Nc; ++c2) {",
+      "      tmunu += lmu[c1][c2] * Kokkos::conj(lnu[c1][c2]);",
+      "    }",
+      "  }",
+      "  // store the Wilson loop per site",
+      "  Wmunu_per_site(Idcs...) = tmunu;",
+      "}",
+    ];
+
+    // a small, tasteful keyword set (kept short on purpose)
+    const KEYWORDS = ["template", "typename", "class", "const", "auto",
+                      "return", "for", "void", "int", "double", "size_t",
+                      "using", "requires", "inline"];
+
+    // one pass: strings first (so keywords inside them are left alone), then keywords
+    const TOKEN_RE = new RegExp(
+      '("(?:[^"\\\\]|\\\\.)*")' +                 // group 1: a double-quoted string
+      '|\\b(' + KEYWORDS.join("|") + ')\\b',      // group 2: a keyword
+      "g"
+    );
+    
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function highlight(text) {
+      return escapeHtml(text).replace(TOKEN_RE, (m, str, kw) =>
+        str ? '<span class="cw-str">' + str + '</span>'
+            : '<span class="cw-kw">' + kw + '</span>'
+      );
+    }
+    
+    const KW_RE = new RegExp("\\b(" + KEYWORDS.join("|") + ")\\b", "g");
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function highlight(text) {
+      // escape FIRST so the <...> in C++ types aren't parsed as tags,
+      // then wrap keywords
+      return escapeHtml(text).replace(KW_RE, '<span class="cw-kw">$1</span>');
+    }
+
+    function buildWall() {
+      const wall = document.getElementById("codewall");
+      if (!wall) return;
+      wall.textContent = "";
+
+      const cs = getComputedStyle(document.documentElement);
+      const size = parseFloat(cs.getPropertyValue("--cw-size")) || 13;
+      const lh   = parseFloat(cs.getPropertyValue("--cw-line-h")) || 1.55;
+      const needed = Math.ceil((window.innerHeight + 120) / (size * lh));
+
+      for (let i = 0; i < needed; i++) {
+        const text = SNIPPET[i % SNIPPET.length];
+        const isComment = text.trimStart().startsWith("//");
+        const el = document.createElement("div");
+        el.className = "cw-line" + (isComment ? " cw-cm" : "");
+        el.style.setProperty("--cw-i", (i + (Math.random() * 0.6 - 0.3)).toFixed(3));
+
+        if (text === "") {
+          el.style.animation = "none";
+          el.textContent = " ";
+        } else if (isComment) {
+          el.textContent = text;            // whole-line comment colour, no keywords
+        } else {
+          el.innerHTML = highlight(text);   // escaped + keyword spans
+        }
+        wall.appendChild(el);
+      }
+    }
+
+    buildWall();
+    let t;
+    window.addEventListener("resize", function () {
+      clearTimeout(t);
+      t = setTimeout(buildWall, 200);
+    });
+  })();
+</script>
+
+<style is:global>
+  /* ---- DARK MODE (default): glowing light code on black ---- */
+  #codewall {
+    --cw-pulse:    #cfe6ff;
+    --cw-glow:     rgba(120, 200, 255, 0.55);
+    --cw-cm:       #3e5340;
+    --cw-pulse-cm: #bfe6c8;
+    --cw-glow-cm:  rgba(120, 255, 170, 0.4);
+    --cw-kw:       #c792ea;   /* keyword colour (soft violet) */
+    --cw-str: #c3e88d;   /* string colour (soft green) */
+    --cw-str: #0a7c4a;   /* string colour for light mode */
+
+    --cw-idle:     #5b6b85;
+    --cw-idle-op:   0.13;
+    --cw-bright-op: 0.92;
+
+    --cw-dur:     5s;
+    --cw-stagger: 0.12s;
+    --cw-line-h:  1.55;
+    --cw-size:    26px;
+
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    padding: 2.2rem 3vw;
+    display: grid;
+    grid-auto-rows: max-content;
+    font-family: ui-monospace, "JetBrains Mono", "Fira Code", SFMono-Regular, Menlo, monospace;
+    font-size: var(--cw-size);
+    line-height: var(--cw-line-h);
+    white-space: pre;
+    user-select: none;
+    pointer-events: none;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent),
+      radial-gradient(125% 95% at 50% 36%, #000 32%, transparent 80%);
+            mask-image:
+      linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent),
+      radial-gradient(125% 95% at 50% 36%, #000 32%, transparent 80%);
+    -webkit-mask-composite: source-in;
+            mask-composite: intersect;
+  }
+
+  /* ---- LIGHT MODE: dark code on a light canvas (tune these freely) ---- */
+  html:not(.dark) #codewall {
+    --cw-idle:      #475569;
+    --cw-idle-op:    0.20;
+    --cw-bright-op:  0.85;
+    --cw-pulse:     #1d4ed8;
+    --cw-glow:      rgba(29, 78, 216, 0.28);
+    --cw-cm:        #15803d;
+    --cw-pulse-cm:  #166534;
+    --cw-glow-cm:   rgba(21, 128, 61, 0.22);
+    --cw-kw:        #7c3aed;   /* keyword colour (violet) */
+  }
+
+  #codewall .cw-line {
+    color: var(--cw-idle);
+    opacity: var(--cw-idle-op);
+    will-change: opacity, color;
+    animation: cw-pulse var(--cw-dur) ease-in-out infinite;
+    animation-delay: calc(var(--cw-i) * var(--cw-stagger) * -1);
+  }
+  #codewall .cw-line.cw-cm { color: var(--cw-cm); font-style: italic; animation-name: cw-pulse-cm; }
+
+  /* keyword spans keep their own hue; opacity + glow still cascade from the line */
+  #codewall .cw-kw { color: var(--cw-kw); }
+  #codewall .cw-str { color: var(--cw-str); }
+
+  @keyframes cw-pulse {
+    0%, 14%, 100% { opacity: var(--cw-idle-op); color: var(--cw-idle); text-shadow: none; }
+    6%            { opacity: var(--cw-bright-op); color: var(--cw-pulse);
+                    text-shadow: 0 0 14px var(--cw-glow); }
+  }
+  @keyframes cw-pulse-cm {
+    0%, 14%, 100% { opacity: var(--cw-idle-op); color: var(--cw-cm); text-shadow: none; }
+    6%            { opacity: calc(var(--cw-bright-op) * 0.9); color: var(--cw-pulse-cm);
+                    text-shadow: 0 0 12px var(--cw-glow-cm); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #codewall .cw-line { animation: none !important; opacity: var(--cw-idle-op); }
+  }
+
+  @media (max-width: 640px) {
+    #codewall { --cw-size: 11px; --cw-stagger: 0.13s; padding: 1.4rem 4vw; }
+  }
+</style>
