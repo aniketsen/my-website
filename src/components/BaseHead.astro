@@ -10,6 +10,43 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 
 const { title, description, image = "/open-graph.jpg" } = Astro.props
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Aniket Sen",
+  url: "https://sen-aniket.com",
+  jobTitle: "Postdoctoral Researcher",
+  description:
+    "Postdoctoral researcher in lattice QCD at the Helmholtz-Institut für Strahlen- und Kernphysik (HISKP), University of Bonn.",
+  affiliation: {
+    "@type": "CollegeOrUniversity",
+    name: "University of Bonn",
+    url: "https://www.uni-bonn.de/",
+  },
+  knowsAbout: [
+    "Lattice QCD",
+    "High-Performance Computing",
+    "Research Software Engineering",
+    "Computational Physics",
+    "Machine Learning",
+  ],
+  sameAs: [
+    "https://github.com/aniketsen",
+    "https://orcid.org/0000-0002-7551-1126",
+    "https://scholar.google.com/citations?user=F0-Umy4AAAAJ&hl=en",
+    "https://inspirehep.net/authors/2060564",
+    "https://www.linkedin.com/in/aniket-sen-53916b41/",
+  ],
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Aniket Sen",
+  url: "https://sen-aniket.com",
+  author: { "@type": "Person", name: "Aniket Sen" },
+};
 ---
 
 <!-- Global Metadata -->
@@ -28,6 +65,9 @@ const { title, description, image = "/open-graph.jpg" } = Astro.props
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
+
+<!-- Person & Webpage Schema -->
+ <script type="application/ld+json" set:html={JSON.stringify([personSchema, websiteSchema])} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />

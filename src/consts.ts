@@ -3,7 +3,7 @@ import type { Site, Page, Links, Socials } from "@types"
 // Global
 export const SITE: Site = {
   TITLE: "Aniket Sen",
-  DESCRIPTION: "Welcome to my portfolio and blog, showcasing my work and thoughts.",
+  DESCRIPTION: "Personal website of Aniket Sen, postdoctoral researcher in lattice QCD at the University of Bonn.",
   AUTHOR: "Aniket Sen",
 }
 
