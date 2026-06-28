@@ -7,22 +7,22 @@ export const SITE: Site = {
   AUTHOR: "Aniket Sen",
 }
 
-// Work Page
-export const WORK: Page = {
-  TITLE: "Work",
-  DESCRIPTION: "Places I have worked.",
+// About Me Page
+export const ABOUT: Page = {
+  TITLE: "About Me",
+  DESCRIPTION: "An overview of my background, research interests, and current projects.",
 }
 
 // Blog Page
 export const BLOG: Page = {
   TITLE: "Blog",
-  DESCRIPTION: "Writing on topics I am passionate about.",
+  DESCRIPTION: "Articles and updates about my research, projects, and whatever else I find interesting.",
 }
 
 // Projects Page 
 export const PROJECTS: Page = {
   TITLE: "Projects",
-  DESCRIPTION: "Recent projects I have worked on.",
+  DESCRIPTION: "Past and current projects that I have been working on, including code repositories and demos where applicable.",
 }
 
 // Search Page
@@ -38,8 +38,8 @@ export const LINKS: Links = [
     HREF: "/", 
   },
   { 
-    TEXT: "Work", 
-    HREF: "/work", 
+    TEXT: "About Me", 
+    HREF: "/about", 
   },
   { 
     TEXT: "Blog", 

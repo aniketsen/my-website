@@ -1,0 +1,204 @@
+---
+/**
+ * src/pages/about.astro  ->  route /about
+ *
+ * Make sure the "About Me" item in LINKS (src/consts.ts) points to "/about".
+ * Drop your photo at public/profile.jpg and your CV at public/cv.pdf.
+ *
+ * Structure: voice (intro) -> research overview -> structured timeline
+ * sections -> voice (beyond the work) -> CV + contact.
+ * The prose is a real first draft in your tone — edit freely. Anything in
+ * [brackets] or marked EDIT needs your actual details.
+ */
+import PageLayout from "@layouts/PageLayout.astro"
+import Container from "@components/Container.astro"
+import { Image } from "astro:assets"
+import profile from "../../assets/profile.jpg"
+
+const TITLE = "About Me"
+const DESCRIPTION = "Aniket Sen — postdoctoral researcher in lattice QCD at the University of Bonn."
+
+// ---- EDIT: your real dates / institutions ----
+const education = [
+  { period: "2021 – 2024", title: "Ph.D. in Physics", place: "University of Bonn, Germany", note: "Thesis: Transverse Momentum Dependent Parton Distribution Functions from Twisted Mass Lattice QCD" },
+  { period: "2019 – 2021", title: "M.Sc. in Physics", place: "University of Bonn, Germany" },
+  { period: "2016 – 2019", title: "B.Sc. in Physics, Mathematics and Computer Science", place: "St. Joseph's College, Bangalore, India" },
+]
+
+const positions = [
+  {
+    period: "2024 – present",
+    title: "Postdoctoral Researcher",
+    place: "Helmholtz-Institut für Strahlen- und Kernphysik (HISKP), University of Bonn",
+    note: "Project B02 in the CRC1639 NuMeriQS",
+  },
+]
+
+// ---- EDIT: verify exact titles, full author lists, and DOIs ----
+const publications = [
+  {
+    year: "2025",
+    title: "Tucano: Advancing neural text generation for Portuguese",
+    authors: "N. K. Corrêa, <strong>A. Sen</strong>, S. Falk, S. Fatimah",
+    venue: "Patterns 6 (2025) 101325",
+    href: "https://doi.org/10.1016/j.patter.2025.101325",
+  },
+  {
+    year: "2024",
+    title: "On the equivalence of Prony and Lanczos methods for Euclidean correlation functions",
+    authors: "J. Ostmeyer, <strong>A. Sen</strong>, C. Urbach",
+    venue: "Eur.Phys.J.A 61 (2025) 2, 26",
+    href: "https://doi.org/10.1140/epja/s10050-025-01495-8",
+  },
+  {
+    year: "2023",
+    title: "Nonperturbative renormalization of asymmetric staple-shaped operators in twisted mass lattice QCD",
+    authors: "C. Alexandrou, ..., <strong>A. Sen</strong>, ...",
+    venue: "Phys.Rev.D 108 (2023) 11, 114503",
+    href: "https://doi.org/10.1103/PhysRevD.108.114503",
+  }
+]
+
+const linkClass = "underline decoration-[.5px] underline-offset-2 decoration-black/30 dark:decoration-white/40 hover:decoration-[#8b5cf6] text-black dark:text-white blend"
+---
+
+<PageLayout title={TITLE} description={DESCRIPTION}>
+  <div class="pt-36 pb-20">
+    <Container size="lg">
+
+      <!-- 1 · Intro: photo + name + voice -->
+      <section class="animate flex flex-col sm:flex-row sm:items-center gap-6">
+        <!-- EDIT: drop your photo at public/profile.jpg -->
+        <Image
+          src={profile}
+          alt="Aniket Sen"
+          width={128}
+          height={128}
+          loading="eager"
+          class="w-32 h-32 rounded-2xl object-cover shrink-0 ring-1 ring-black/10 dark:ring-white/10"
+        />
+        <div>
+          <h1 class="text-4xl font-semibold text-black dark:text-white">Aniket Sen</h1>
+          <p class="text-lg opacity-75 mt-1">Lattice QCD · Research software engineer · University of Bonn</p>
+        </div>
+      </section>
+
+      <section class="animate mt-8 space-y-4">
+        <p>
+          I'm a postdoctoral researcher in lattice QCD at the University of Bonn.
+          My background is in theoretical physics, but over the course of my career
+          I found myself more interested in developing the tools that do the physics
+          than the actual physics itself.
+        </p>
+        <p>
+          Most of my current work revolves around building a new performance-portable,
+          scalable, and general-purpose lattice field theory library for the next generation
+          of simulations and algorithmic developments. If you're curious about the details,
+          check out the <a href="/projects" class={linkClass}>projects page</a> for a more
+          technical overview of what I do and how I do it.
+        </p>
+      </section>
+
+      <!-- 2 · Structured sections -->
+      <section class="animate mt-16">
+        <h2 class="text-xl font-semibold text-black dark:text-white border-b border-black/10 dark:border-white/10 pb-2 mb-6">
+          Education
+        </h2>
+        <div>
+          {education.map((e) => (
+            <div class="relative pl-7 pb-7 border-l border-black/10 dark:border-white/10 last:border-transparent last:pb-0">
+              <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></span>
+              <div class="text-xs uppercase tracking-wider opacity-60">{e.period}</div>
+              <div class="font-semibold text-black dark:text-white mt-1">{e.title}</div>
+              <div class="opacity-75">{e.place}</div>
+              {e.note && <div class="text-sm opacity-60 mt-1">{e.note}</div>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="animate mt-16">
+        <h2 class="text-xl font-semibold text-black dark:text-white border-b border-black/10 dark:border-white/10 pb-2 mb-6">
+          Positions
+        </h2>
+        <div>
+          {positions.map((p) => (
+            <div class="relative pl-7 pb-7 border-l border-black/10 dark:border-white/10 last:border-transparent last:pb-0">
+              <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></span>
+              <div class="text-xs uppercase tracking-wider opacity-60">{p.period}</div>
+              <div class="font-semibold text-black dark:text-white mt-1">{p.title}</div>
+              <div class="opacity-75">{p.place}</div>
+              {p.note && <div class="text-sm opacity-60 mt-1">{p.note}</div>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="animate mt-16">
+        <div class="flex items-baseline justify-between border-b border-black/10 dark:border-white/10 pb-2 mb-6">
+          <h2 class="text-xl font-semibold text-black dark:text-white">Selected publications</h2>
+          <!-- EDIT: point this at your full list / Scholar / INSPIRE -->
+          <span class="text-sm">
+            Full list (
+            <a href="https://scholar.google.com/citations?user=F0-Umy4AAAAJ&hl=en" target="_blank" class={linkClass + " text-sm"}>Google Scholar</a>
+            <span class="opacity-60"> / </span>
+            <a href="https://inspirehep.net/authors/2060564" target="_blank" class={linkClass + " text-sm"}>INSPIRE-HEP</a>
+            )
+          </span>
+        </div>
+        <div>
+          {publications.map((pub) => (
+            <div class="relative pl-7 pb-7 border-l border-black/10 dark:border-white/10 last:border-transparent last:pb-0">
+              <span class="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[#8b5cf6]"></span>
+              <div class="text-xs uppercase tracking-wider opacity-60">{pub.year}</div>
+              <a href={pub.href} target="_blank" class="font-semibold text-black dark:text-white mt-1 block hover:text-[#8b5cf6] blend">{pub.title}</a>
+              <div class="text-sm opacity-75 mt-0.5" set:html={pub.authors}></div>
+              <div class="text-sm opacity-60 italic">{pub.venue}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- 4 · Beyond the work (the differentiator) -->
+      <section class="animate mt-16">
+        <h2 class="text-xl font-semibold text-black dark:text-white border-b border-black/10 dark:border-white/10 pb-2 mb-6">
+          Beyond the work
+        </h2>
+        <div class="space-y-4">
+          <p>
+            When I'm not coding or doing physics, I love nerding over everything
+            from books, films, music to video games. I can spend hours talking about
+            my love for all things from skyrim to community. I also enjoy photography, 
+            and have made occasional attempts at videography. I grew up doing theatre,
+            making short films, and would love to get back into it someday.
+          </p>
+          <p>
+            Check out my <a href="/blog" class={linkClass}>blog</a> for updates on my work, 
+            thoughts on random topics, recent fascinations, and occasional rants. 
+          </p>
+        </div>
+      </section>
+
+      <!-- 5 · CV + contact -->
+      <section class="animate mt-16">
+        <h2 class="text-xl font-semibold text-black dark:text-white border-b border-black/10 dark:border-white/10 pb-2 mb-6">
+          The formal version & getting in touch
+        </h2>
+        <p>The complete, exhaustive version of all this lives in my CV.</p>
+        <!-- EDIT: drop your CV at public/cv.pdf -->
+        <a
+          href="/src/assets/cv_Sen_Aniket.pdf"
+          class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg border border-black/15 dark:border-white/20 hover:border-[#8b5cf6] text-black dark:text-white transition-colors"
+        >
+          Download CV (PDF) <span class="text-[#8b5cf6]">↗</span>
+        </a>
+        <p class="mt-6">
+          <!-- EDIT: your email -->
+          The fastest way to reach me is by <a href="mailto:[your-email]" class={linkClass}>email</a>,
+          and I'm also on <a href="https://github.com/aniketsen" class={linkClass}>GitHub</a>.
+        </p>
+      </section>
+
+    </Container>
+  </div>
+</PageLayout>
